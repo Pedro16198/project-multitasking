@@ -46,6 +46,7 @@ public class ConcurrentProcessor {
 
                 List<Customer> chunk = customers.subList(start, end);
 
+                //aqui llamamos implicitamente al metodo Callable().
                 Future<Map<String, Long>> future = executor.submit(() -> countCountries(chunk));
 
                 futures.add(future);

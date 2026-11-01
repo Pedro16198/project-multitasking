@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import com.fluxit.project_multitasking.dto.ProcessingResult;
 import com.fluxit.project_multitasking.model.Customer;
 
 public interface CustomerService {
@@ -17,4 +18,7 @@ public interface CustomerService {
 
     List<Customer> getCustomers();
 
+    ProcessingResult<Map<String, Long>> groupByCountrySequentialWithMetrics();
+
+    ProcessingResult<Map<String, Long>> groupByCountryConcurrentWithMetrics() throws InterruptedException, ExecutionException;
 }

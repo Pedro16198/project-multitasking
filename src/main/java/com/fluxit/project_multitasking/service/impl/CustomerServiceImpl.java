@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.springframework.stereotype.Service;
 
+import com.fluxit.project_multitasking.dto.ProcessingResult;
 import com.fluxit.project_multitasking.model.Customer;
 import com.fluxit.project_multitasking.processing.ConcurrentProcessor;
 import com.fluxit.project_multitasking.processing.SequentialProcessor;
@@ -45,6 +46,42 @@ public class CustomerServiceImpl implements CustomerService {
 
     public Map<String, Long> groupByCountryConcurrent() throws InterruptedException, ExecutionException {
         return concurrentProcessor.groupByCountry(customers);
+    }
+
+    @Override
+    public ProcessingResult<Map<String, Long>> groupByCountrySequentialWithMetrics() {
+
+        long start = System.nanoTime();
+
+        Map<String, Long> result =
+            sequentialProcessor.groupByCountry(customers);
+
+        long elapsed = System.nanoTime() - start;
+
+        return new ProcessingResult<>(
+            "SEQUENTIAL",
+            elapsed / 1_000_000,
+            customers.size(),
+            result
+        );
+    }
+
+    @Override
+    public ProcessingResult<Map<String, Long>> groupByCountryConcurrentWithMetrics() throws InterruptedException, ExecutionException {
+
+        long start = System.nanoTime();
+
+        Map<String, Long> result =
+            concurrentProcessor.groupByCountry(customers);
+
+        long elapsed = System.nanoTime() - start;
+
+        return new ProcessingResult<>(
+            "CONCURRENT",
+            elapsed / 1_000_000,
+            customers.size(),
+            result
+        );
     }
 
 }

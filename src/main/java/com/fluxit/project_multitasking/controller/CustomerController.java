@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fluxit.project_multitasking.dto.ProcessingResult;
 import com.fluxit.project_multitasking.model.Customer;
 import com.fluxit.project_multitasking.service.CustomerService;
 
@@ -37,4 +38,18 @@ public class CustomerController {
     public Map<String, Long> groupByCountryConcurrent() throws InterruptedException, ExecutionException {
         return customerService.groupByCountryConcurrent();
     }
+
+
+    @GetMapping("/countries/sequential/metrics")
+    public ProcessingResult<Map<String, Long>> groupByCountrySequentialWithMetrics() {
+
+        return customerService.groupByCountrySequentialWithMetrics();
+    }
+
+    @GetMapping("/countries/concurrent/metrics")
+    public ProcessingResult<Map<String, Long>> groupByCountryConcurrentWithMetrics() throws InterruptedException, ExecutionException {
+
+        return customerService.groupByCountryConcurrentWithMetrics();
+    }
+
 }
