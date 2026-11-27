@@ -1,5 +1,6 @@
 package com.fluxit.project_multitasking.controller;
 
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -72,6 +73,26 @@ public class CustomerController {
         throws InterruptedException, ExecutionException {
 
         return customerService.topCountriesConcurrentWithMetrics(limit);
+    }
+
+    @GetMapping("/subscriptions/monthly/sequential")
+    public Map<YearMonth, Long> groupBySubscriptionMonthSequential() {
+        return customerService.groupBySubscriptionMonthSequential();
+    }
+
+    @GetMapping("/subscriptions/monthly/concurrent")
+    public Map<YearMonth, Long> groupBySubscriptionMonthConcurrent() throws InterruptedException, ExecutionException {
+        return customerService.groupBySubscriptionMonthConcurrent();
+    }
+
+    @GetMapping("/subscriptions/monthly/sequential/metrics")
+    public ProcessingResult<Map<YearMonth, Long>> groupBySubscriptionMonthSequentialWithMetrics() {
+        return customerService.groupBySubscriptionMonthSequentialWithMetrics();
+    }
+
+    @GetMapping("/subscriptions/monthly/concurrent/metrics")
+    public ProcessingResult<Map<YearMonth, Long>> groupBySubscriptionMonthConcurrentWithMetrics() throws InterruptedException, ExecutionException {
+        return customerService.groupBySubscriptionMonthConcurrentWithMetrics();
     }
 
 }

@@ -1,6 +1,7 @@
 package com.fluxit.project_multitasking.service;
 
 import java.io.IOException;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -29,4 +30,12 @@ public interface CustomerService {
     ProcessingResult<Map<String, Long>> topCountriesSequentialWithMetrics(int limit);
 
     ProcessingResult<Map<String, Long>> topCountriesConcurrentWithMetrics(int limit) throws InterruptedException, ExecutionException;
+
+    Map<YearMonth, Long> groupBySubscriptionMonthSequential();
+
+    Map<YearMonth, Long> groupBySubscriptionMonthConcurrent() throws InterruptedException, ExecutionException;
+
+    ProcessingResult<Map<YearMonth, Long>> groupBySubscriptionMonthSequentialWithMetrics();
+
+    ProcessingResult<Map<YearMonth, Long>> groupBySubscriptionMonthConcurrentWithMetrics() throws InterruptedException, ExecutionException;
 }

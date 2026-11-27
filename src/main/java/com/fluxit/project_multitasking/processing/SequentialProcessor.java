@@ -1,5 +1,6 @@
 package com.fluxit.project_multitasking.processing;
 
+import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,22 @@ public class SequentialProcessor {
                                     (a, b) -> a,
                                     java.util.LinkedHashMap::new)
                             );
+    }
+
+    public Map<YearMonth, Long> groupBySubscriptionMonth(List<Customer> customers) {
+        Map<YearMonth, Long> result = new HashMap<>();
+
+        for (Customer customer : customers) {
+            if (customer.subscriptionDate() == null) {
+                continue;
+            }
+
+            YearMonth yearMonth = YearMonth.from(customer.subscriptionDate());
+
+            result.merge(yearMonth, 1L, Long::sum);
+        }
+
+        return result;
     }
 
 }
