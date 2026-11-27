@@ -1,6 +1,7 @@
 package com.fluxit.project_multitasking.service.impl;
 
 import java.io.IOException;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -26,6 +27,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     //availableProcessors(): Devuelve el número de procesadores disponibles para la máquina virtual Java.
     private final ConcurrentProcessor concurrentProcessor = new ConcurrentProcessor(Runtime.getRuntime().availableProcessors());
+
+    private static final String SEQUENTIAL = "SEQUENTIAL";
+
+    private static final String CONCURRENT = "CONCURRENT";
 
     @Getter
     private List<Customer> customers;
@@ -58,7 +63,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         long elapsed = System.nanoTime() - start;
 
-        return new ProcessingResult<>("SEQUENTIAL", elapsed / 1_000_000, customers.size(), result);
+        return new ProcessingResult<>(SEQUENTIAL, elapsed / 1_000_000, customers.size(), result);
     }
 
     @Override
@@ -70,7 +75,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         long elapsed = System.nanoTime() - start;
 
-        return new ProcessingResult<>("CONCURRENT", elapsed / 1_000_000, customers.size(), result);
+        return new ProcessingResult<>(CONCURRENT, elapsed / 1_000_000, customers.size(), result);
     }
 
     @Override
@@ -99,7 +104,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         long elapsed = System.nanoTime() - start;
 
-        return new ProcessingResult<>("SEQUENTIAL", elapsed / 1_000_000, customers.size(), result);
+        return new ProcessingResult<>(SEQUENTIAL, elapsed / 1_000_000, customers.size(), result);
     }
 
     @Override
@@ -113,8 +118,44 @@ public class CustomerServiceImpl implements CustomerService {
 
         long elapsed = System.nanoTime() - start;
 
-        return new ProcessingResult<>("CONCURRENT", elapsed / 1_000_000, customers.size(), result);
+        return new ProcessingResult<>(CONCURRENT, elapsed / 1_000_000, customers.size(), result);
     }
 
+    @Override
+    public Map<YearMonth, Long> groupBySubscriptionMonthSequential() {
+        return sequentialProcessor.groupBySubscriptionMonth(customers);
+    }
 
+    @Override
+    public Map<YearMonth, Long> groupBySubscriptionMonthConcurrent() throws InterruptedException, ExecutionException {
+        return concurrentProcessor.groupBySubscriptionMonth(customers);
+    }
+
+    @Override
+    public ProcessingResult<Map<YearMonth, Long>> groupBySubscriptionMonthSequentialWithMetrics() {
+
+        long start = System.nanoTime();
+
+        Map<YearMonth, Long> result = sequentialProcessor.groupBySubscriptionMonth(customers);
+
+        long elapsed = System.nanoTime() - start;
+
+        return new ProcessingResult<>(SEQUENTIAL, elapsed / 1_000_000, customers.size(), result);
+
+    }
+
+    @Override
+    public ProcessingResult<Map<YearMonth, Long>> groupBySubscriptionMonthConcurrentWithMetrics() throws InterruptedException, ExecutionException {
+
+        long start = System.nanoTime();
+
+        Map<YearMonth, Long> result = concurrentProcessor.groupBySubscriptionMonth(customers);
+
+        long elapsed = System.nanoTime() - start;
+
+        return new ProcessingResult<>(CONCURRENT, elapsed / 1_000_000, customers.size(), result);
+
+    }
 }
+
+

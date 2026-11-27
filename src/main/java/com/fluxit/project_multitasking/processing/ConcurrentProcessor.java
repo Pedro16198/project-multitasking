@@ -1,5 +1,6 @@
 package com.fluxit.project_multitasking.processing;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -110,5 +111,63 @@ public class ConcurrentProcessor {
                                     java.util.LinkedHashMap::new)
                             );
     }
+
+    public Map<YearMonth, Long> groupBySubscriptionMonth(List<Customer> customers) throws InterruptedException, ExecutionException {
+
+        if (customers.isEmpty()) {
+            return Map.of();
+        }
+
+        int taskCount = Math.min(threadCount, customers.size());
+
+        int chunkSize = (customers.size() + taskCount - 1) / taskCount;
+
+        List<Future<Map<YearMonth, Long>>> futures = new ArrayList<>();
+
+        try (ExecutorService executor = Executors.newFixedThreadPool(taskCount)) {
+
+            for (int i = 0; i < taskCount; i++) {
+                int start = i * chunkSize;
+                int end = Math.min(start + chunkSize, customers.size());
+
+                if (start >= end) {
+                    break;
+                }
+
+                List<Customer> chunk = customers.subList(start, end);
+
+                Future<Map<YearMonth, Long>> future = executor.submit(() -> countSubscriptionMonths(chunk));
+
+                futures.add(future);
+            }
+
+            Map<YearMonth, Long> result = new HashMap<>();
+
+            for (Future<Map<YearMonth, Long>> future : futures) {
+                Map<YearMonth, Long> partialResult = future.get();
+
+                partialResult.forEach((yearMonth, count) -> result.merge(yearMonth, count, Long::sum));
+            }
+
+            return result;
+        }
+    }
+
+    private Map<YearMonth, Long> countSubscriptionMonths(List<Customer> customers) {
+        Map<YearMonth, Long> result = new HashMap<>();
+
+        for (Customer customer : customers) {
+            if (customer.subscriptionDate() == null) {
+                continue;
+            }
+
+            YearMonth yearMonth = YearMonth.from(customer.subscriptionDate());
+
+            result.merge(yearMonth, 1L, Long::sum);
+        }
+
+        return result;
+    }
+
 
 }
