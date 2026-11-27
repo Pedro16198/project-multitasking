@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fluxit.project_multitasking.dto.ProcessingResult;
@@ -39,7 +40,6 @@ public class CustomerController {
         return customerService.groupByCountryConcurrent();
     }
 
-
     @GetMapping("/countries/sequential/metrics")
     public ProcessingResult<Map<String, Long>> groupByCountrySequentialWithMetrics() {
 
@@ -50,6 +50,28 @@ public class CustomerController {
     public ProcessingResult<Map<String, Long>> groupByCountryConcurrentWithMetrics() throws InterruptedException, ExecutionException {
 
         return customerService.groupByCountryConcurrentWithMetrics();
+    }
+
+    @GetMapping("/countries/top/sequential")
+    public Map<String, Long> topCountriesSequential(@RequestParam(defaultValue = "5") int limit) {
+        return customerService.topCountriesSequential(limit);
+    }
+
+    @GetMapping("/countries/top/concurrent")
+    public Map<String, Long> topCountriesConcurrent(@RequestParam(defaultValue = "5") int limit) throws InterruptedException, ExecutionException {
+        return customerService.topCountriesConcurrent(limit);
+    }
+
+    @GetMapping("/countries/top/sequential/metrics")
+    public ProcessingResult<Map<String, Long>> topCountriesSequentialWithMetrics(@RequestParam(defaultValue = "5") int limit) {
+        return customerService.topCountriesSequentialWithMetrics(limit);
+    }
+
+    @GetMapping("/countries/top/concurrent/metrics")
+    public ProcessingResult<Map<String, Long>> topCountriesConcurrentWithMetrics(@RequestParam(defaultValue = "5") int limit)
+        throws InterruptedException, ExecutionException {
+
+        return customerService.topCountriesConcurrentWithMetrics(limit);
     }
 
 }

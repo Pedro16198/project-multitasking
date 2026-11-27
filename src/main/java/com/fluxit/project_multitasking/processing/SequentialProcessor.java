@@ -26,4 +26,27 @@ public class SequentialProcessor {
         return result;
     }
 
+    public Map<String, Long> topCountries(Map<String, Long> countryCounts, int limit) {
+
+        if (limit < 1) {
+            throw new IllegalArgumentException("El límite debe ser mayor que cero");
+        }
+
+        return countryCounts.entrySet()
+                            .stream()
+                            .sorted(
+                                Map.Entry.<String, Long>comparingByValue()
+                                         .reversed()
+                                         .thenComparing(Map.Entry.comparingByKey())
+                            )
+                            .limit(limit)
+                            .collect(
+                                java.util.stream.Collectors.toMap(
+                                    Map.Entry::getKey,
+                                    Map.Entry::getValue,
+                                    (a, b) -> a,
+                                    java.util.LinkedHashMap::new)
+                            );
+    }
+
 }
