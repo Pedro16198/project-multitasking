@@ -21,4 +21,12 @@ public interface CustomerService {
     ProcessingResult<Map<String, Long>> groupByCountrySequentialWithMetrics();
 
     ProcessingResult<Map<String, Long>> groupByCountryConcurrentWithMetrics() throws InterruptedException, ExecutionException;
+
+    Map<String, Long> topCountriesSequential(int limit);
+
+    Map<String, Long> topCountriesConcurrent(int limit) throws InterruptedException, ExecutionException;
+
+    ProcessingResult<Map<String, Long>> topCountriesSequentialWithMetrics(int limit);
+
+    ProcessingResult<Map<String, Long>> topCountriesConcurrentWithMetrics(int limit) throws InterruptedException, ExecutionException;
 }

@@ -81,4 +81,34 @@ public class ConcurrentProcessor {
 
         return result;
     }
+
+
+    public Map<String, Long> topCountries(Map<String, Long> countryCounts, int limit) {
+
+        if (limit < 1) {
+            throw new IllegalArgumentException("El límite debe ser mayor que cero");
+        }
+
+        /*
+            parallelStream(): no crea necesariamente un hilo nuevo por cada elemento.
+            Java divide el trabajo en tareas más pequeñas y las distribuye entre los hilos disponibles.
+            */
+
+        return countryCounts.entrySet()
+                            .parallelStream()
+                            .sorted(
+                                Map.Entry.<String, Long>comparingByValue()
+                                         .reversed()
+                                         .thenComparing(Map.Entry.comparingByKey())
+                            )
+                            .limit(limit)
+                            .collect(
+                                java.util.stream.Collectors.toMap(
+                                    Map.Entry::getKey,
+                                    Map.Entry::getValue,
+                                    (a, b) -> a,
+                                    java.util.LinkedHashMap::new)
+                            );
+    }
+
 }
